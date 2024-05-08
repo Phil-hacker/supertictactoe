@@ -33,7 +33,7 @@ jobs:
         uses: actions/checkout@v4
       - uses: cargo-bins/cargo-binstall@main
       - name: Install trunk
-        run: cargo binstall trunk
+        run: cargo binstall trunk --no-confirm
       - name: Compile
         run: trunk build --release
       - name: Cache
