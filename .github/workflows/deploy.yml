@@ -34,6 +34,8 @@ jobs:
       - uses: cargo-bins/cargo-binstall@main
       - name: Install trunk
         run: cargo binstall trunk --no-confirm
+      - name: Install the wasm32 target
+        run: rustup target add wasm32-unknown-unknown
       - name: Compile
         run: trunk build --release
       - name: Cache
