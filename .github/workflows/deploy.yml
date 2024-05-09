@@ -36,13 +36,13 @@ jobs:
         run: cargo binstall trunk --no-confirm
       - name: Install the wasm32 target
         run: rustup target add wasm32-unknown-unknown
-      - name: Compile
-        run: trunk build --release --public-url supertictactoe
       - name: Cache
         uses: actions/cache@v4.0.2
         with: 
           path: './target'
           key: 'rust-target'
+      - name: Compile
+        run: trunk build --release --public-url supertictactoe
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
