@@ -42,7 +42,7 @@ jobs:
           path: './target'
           key: 'rust-target'
       - name: Compile
-        run: trunk build --release --public-url supertictactoe
+        run: trunk build --release --public-url /supertictactoe
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
