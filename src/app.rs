@@ -2,7 +2,7 @@ use crate::{game::*, game_widget::GameField};
 
 #[derive(Debug, Default)]
 enum AppState {
-    OfflineGame(Game),
+    OfflineGame(Vec<Game>),
     #[default]
     Home,
 }
@@ -59,15 +59,15 @@ impl eframe::App for SuperTicTacToe {
                 match &mut self.state {
                     AppState::OfflineGame(game) => {
                         ui.add(GameField::new(game, None));
-                        let winner = game.get_winner();
-                        match winner {
+                        let winner = game.last().unwrap().get_winner();
+                        if match winner {
                             Winner::Draw => ui.label("draw"),
                             Winner::Cross => ui.label("X wins"),
                             Winner::Circle => ui.label("O wins"),
-                            Winner::None => ui.label(""),
-                        };
+                            Winner::None => ui.button("undo"),
+                        }.clicked() && game.len() > 1 { let _ = game.pop(); };
                         if !matches!(winner, Winner::None) && ui.button("Play again").clicked() {
-                            self.state = AppState::OfflineGame(Game::default())
+                            self.state = AppState::OfflineGame(vec![Game::default()])
                         }
                         if !matches!(winner, Winner::None) && ui.button("Home").clicked() {
                             self.state = AppState::Home
@@ -75,7 +75,7 @@ impl eframe::App for SuperTicTacToe {
                     }
                     AppState::Home => {
                         if ui.button("Offline Game").clicked() {
-                            self.state = AppState::OfflineGame(Game::default());
+                            self.state = AppState::OfflineGame(vec![Game::default()]);
                         }
                     }
                 }

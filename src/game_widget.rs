@@ -4,13 +4,16 @@ use crate::game::*;
 
 #[derive(Debug)]
 pub struct GameField<'a> {
-    pub game: &'a mut Game,
+    pub games: &'a mut Vec<Game>,
     pub player: Option<Player>,
 }
 
 impl<'a> GameField<'a> {
-    pub fn new(game: &'a mut Game, player: Option<Player>) -> Self {
-        Self { game, player }
+    pub fn new(games: &'a mut Vec<Game>, player: Option<Player>) -> Self {
+        Self {
+            games,
+            player,
+        }
     }
 }
 
@@ -27,15 +30,16 @@ impl Widget for GameField<'_> {
         let length = size.min_elem();
         let stroke = ui.visuals().noninteractive().fg_stroke;
         let painter = ui.painter();
+        let mut game = self.games.last().unwrap().clone();
         let (ubergrids, grids) = draw_full_grid(
             painter,
             bound.min,
             length,
             stroke,
-            &self.game.get_finished_fields(),
-            self.game.get_next_move(),
+            &game.get_finished_fields(),
+            game.get_next_move(),
         );
-        for (i, game) in self.game.get_field().iter().enumerate() {
+        for (i, game) in game.get_field().iter().enumerate() {
             match game {
                 SmallGame::Unfinished(small_game) => {
                     for (j, field) in small_game.iter().enumerate() {
@@ -61,12 +65,13 @@ impl Widget for GameField<'_> {
                 let pos = grids.iter().position(|v| *v);
                 if let Some(pos) = pos {
                     println!("{pos}");
-                    self.game
-                        .play(Move::new(
-                            self.player.unwrap_or_else(|| self.game.get_next_player()),
-                            pos,
-                        ))
-                        .unwrap_or_else(|()| println!("{:?}", self.game));
+                    let game_move = Move::new(
+                        self.player.unwrap_or_else(|| game.get_next_player()),
+                        pos,
+                    );
+                    if game.play(game_move).is_ok() {
+                        self.games.push(game)
+                    }
                 }
             }
         }
